@@ -205,7 +205,7 @@ class AllBot {
       this.respondToWhitelist(res, res.match[1])
     );
     
-    this.robot.hear(/is that(.*)/i, res=>
+    this.robot.hear(/is that (.*)/i, res=>
        this.respondToLameBoy(res, res.match[1])
                     );
 
