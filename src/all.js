@@ -127,6 +127,13 @@ class AllBot {
     this.removeFromBlacklist(user.user_id);
     res.send(`Whitelisted ${target} successfully`);
   }
+  
+  
+  respondToLameBoy(res, target) {
+   const user = this.getUserByName(target); 
+    return res.send(`Oh shit is that you ${target}`);
+  }
+  
 
   respondToAtAll(res) {
     // Select the longer of the two options.
@@ -198,8 +205,8 @@ class AllBot {
       this.respondToWhitelist(res, res.match[1])
     );
     
-    this.robot.hear(/test/i, res=>
-                    res.send(`Is that you? Oh shit what up you.`)
+    this.robot.hear(/is that(.*)/i, res=>
+       this.respondToLameBoy(res, res.match[1])
                     );
 
     // Mention @all command
