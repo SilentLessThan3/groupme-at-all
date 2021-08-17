@@ -198,6 +198,10 @@ class AllBot {
     this.robot.hear(/whitelist (.+)/i, res =>
       this.respondToWhitelist(res, res.match[1])
     );
+    
+    this.robot.hear(/test/i, res=>
+                    res.send(`Is that you? Oh shit what up you.`)
+                    );
 
     // Mention @all command
     this.robot.hear(/(.*)@all(.*)/i, res => this.respondToAtAll(res));
