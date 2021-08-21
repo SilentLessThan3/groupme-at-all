@@ -24,7 +24,6 @@ class AllBot {
 
     // Load the blacklist as soon as we can
     this.robot.brain.once("loaded", this.loadList.bind(this));
-    this.robot.brain.once("loaded", this.loadLeaders.bind(this));
   }
 
   saveList(list) {
