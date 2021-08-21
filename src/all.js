@@ -291,7 +291,7 @@ class AllBot {
     );
 
     this.robot.hear(/commands/i, res=>
-      this.listCommands()
+      this.listCommands(res)
     );
 
 
