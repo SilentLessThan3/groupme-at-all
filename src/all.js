@@ -96,6 +96,17 @@ class AllBot {
     }
   }
 
+  flipCoin(res, target) {
+    console.log(`Flip a coin requested by ${target}`);
+    
+    var x = Math.floor((Math.random()*2) + 1 );
+
+    if(x==1) {
+      return res.send('Heads');
+      }
+      return res.send('Tails');   
+  }
+
   respondToViewBlacklist(res) {
     // Raw blacklist
     if (res.match[1]) return res.send(JSON.stringify(this.blacklist));
@@ -207,7 +218,12 @@ class AllBot {
     
     this.robot.hear(/is that (.*)/i, res=>
        this.respondToLameBoy(res, res.match[1])
-                    );
+    );
+
+    this.robot.hear(/flip a coin/i, res =>
+        this.flipCoin(res)
+    );
+
 
     // Mention @all command
     this.robot.hear(/(.*)@all(.*)/i, res => this.respondToAtAll(res));
