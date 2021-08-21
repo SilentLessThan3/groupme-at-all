@@ -148,7 +148,7 @@ class AllBot {
       ]
     };
     
-    for(x = 0; x <= commands.length; x++) {
+    for(var x = 0; x <= commands.length; x++) {
       output += commands[x] + ', ' + commands[x].description + '\n';
     }
 
@@ -287,7 +287,7 @@ class AllBot {
     );
 
     this.robot.hear(/coinflip/i, res =>
-      this.flipCoin(res)
+      this.coinFlip(res)
     );
 
     this.robot.hear(/commands/i, res=>
