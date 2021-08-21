@@ -20,33 +20,52 @@ class AllBot {
   constructor(robot) {
     this.robot = robot;
     this.blacklist = [];
+    this.leaders = [];
 
     // Load the blacklist as soon as we can
-    this.robot.brain.once("loaded", this.loadBlacklist.bind(this));
+    this.robot.brain.once("loaded", this.loadList.bind(this));
+    this.robot.brain.once("loaded", this.loadLeaders.bind(this));
   }
 
-  saveBlacklist() {
-    console.log("Saving blacklist");
-    this.robot.brain.set("blacklist", this.blacklist);
-    this.robot.brain.save();
+  saveList(list) {
+    if(list == 'blacklist') {
+      console.log("Saving blacklist");
+      this.robot.brain.set("blacklist", this.blacklist);
+      this.robot.brain.save();
+    }
+
+    if(list == 'leaders');
+      console.log('Saving leaderlist');
+      this.robot.brain.set('leaders', this.leaders);
+      this.robot.brain.save();
   }
 
-  loadBlacklist() {
+  loadList() {
     this.blacklist = this.robot.brain.get("blacklist");
     if (this.blacklist) console.log("Blacklist loaded successfully.");
     else console.warn("Failed to load blacklist.");
+
+    this.leaders = this.robot.brain.get('leaders');
+    if(this.leaders) console.log('Leaders loaded successfully');
+    else console.warn('Failed to load leader list.');
   }
 
-  addToBlacklist(item) {
-    this.blacklist.push(item);
-    this.saveBlacklist();
+  addToList(item, list) {
+    if(list == 'blacklist') {
+      this.blacklist.push(item);
+      this.saveList('blacklist');
+    }
+    if(list == 'leaders') {
+      this.leaders.push(item);
+      this.saveList('leaders');
+    }
   }
 
   removeFromBlacklist(item) {
     let index = this.blacklist.indexOf(item);
     if (index !== -1) {
       this.blacklist.splice(index, 1);
-      this.saveBlacklist();
+      this.saveList('blacklist');
       console.log(`Successfully removed ${item} from blacklist.`);
     } else {
       console.warn(`Unable to find ${item} in blacklist!`);
@@ -96,8 +115,8 @@ class AllBot {
     }
   }
 
-  flipCoin(res, target) {
-    console.log(`Flip a coin requested by ${target}`);
+  coinFlip(res) {
+    console.log(`Flip a coin requested.`);
     
     var x = Math.floor((Math.random()*2) + 1 );
 
@@ -106,6 +125,38 @@ class AllBot {
       }
       return res.send('Tails');   
   }
+
+
+  listCommands(res) {
+    console.log(res);
+    var output = '';
+    const commands = {
+      "coinflip" : [
+        {
+          "category" : "Gambling",
+          "command" : "coinflip",
+          "alias" : ["cf", "cflip", "coinf"],
+          "description" : "Flips a coin and returns heads or tails."
+        }
+      ],
+      "all" : [
+        {
+          "category" : "Useful",
+          "command" : "all",
+          "alias" : ["all"],
+          "description" : "Mentions everyone in the team."
+        }
+      ]
+    };
+    
+    for(x = 0; x <= commands.length; x++) {
+      output += commands[x] + ', ' + commands[x].description + '\n';
+    }
+
+    return res.send(output);
+
+  }
+
 
   respondToViewBlacklist(res) {
     // Raw blacklist
@@ -125,7 +176,7 @@ class AllBot {
     if (!user) return res.send(`Could not find a user with the name ${target}`);
 
     console.log(`Blacklisting ${target}, ${user.user_id}`);
-    this.addToBlacklist(user.user_id);
+    this.addToList(user.user_id, 'blacklist');
     res.send(`Blacklisted ${target} successfully.`);
   }
 
@@ -145,6 +196,22 @@ class AllBot {
     return res.send(`Oh shit is that you ${target}`);
   }
   
+  messageLeaders(res) {
+    const text =
+      res.match[0].length > res.match[1].length ? res.match[0] : res.match[1];
+    
+    const message = {
+      text,
+      bot_id,
+      attachments: [{ loci: [], type: "mentions", user_ids: [] }]
+    };
+
+    const users = this.robot.brain.users();
+    Object.keys(users).map((userID, index) => {
+
+    })
+
+  }
 
   respondToAtAll(res) {
     // Select the longer of the two options.
@@ -217,11 +284,15 @@ class AllBot {
     );
     
     this.robot.hear(/is that (.*)/i, res=>
-       this.respondToLameBoy(res, res.match[1])
+      this.respondToLameBoy(res, res.match[1])
     );
 
-    this.robot.hear(/flip a coin/i, res =>
-        this.flipCoin(res)
+    this.robot.hear(/coinflip/i, res =>
+      this.flipCoin(res)
+    );
+
+    this.robot.hear(/commands/i, res=>
+      this.listCommands()
     );
 
 
