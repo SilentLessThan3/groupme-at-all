@@ -123,8 +123,7 @@ class AllBot {
   }
 
   legitCounter(res, check) {
-    var request = JSON.parse(this.req.chunks[0]);
-    console.log(request);
+    console.log(res.user_id);
     if(check) {
       console.log('Checking Counter Amount');
       return res.send(`Shit man, legit count at ${process.env.HUBOT_LEGIT_COUNTER}`);
