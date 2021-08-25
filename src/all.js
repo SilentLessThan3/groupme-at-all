@@ -129,7 +129,7 @@ class AllBot {
     }
       process.env.HUBOT_LEGIT_COUNTER++;
       return console.log('LEGIT COUNT + 1 | Current count = ' + process.env.HUBOT_LEGIT_COUNTER);
-    }
+  
 
 
   }
