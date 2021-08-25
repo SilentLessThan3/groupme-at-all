@@ -1,9 +1,11 @@
+const { POINT_CONVERSION_COMPRESSED } = require("constants");
 const https = require("https");
 
 // Bot configs read in from environment
 const room_id = process.env.HUBOT_GROUPME_ROOM_ID;
 const bot_id = process.env.HUBOT_GROUPME_BOT_ID;
 const token = process.env.HUBOT_GROUPME_TOKEN;
+var legitCount = process.env.HUBOT_LEGIT_COUNTER;
 
 if (!room_id || !bot_id || !token) {
   console.error(
@@ -116,15 +118,25 @@ class AllBot {
 
   coinFlip(res) {
     console.log(`Flip a coin requested.`);
-    
-    var x = Math.floor((Math.random()*2) + 1 );
-
-    if(x==1) {
-      return res.send('Heads');
-      }
-      return res.send('Tails');   
+    var coin = ['Heads','Tails'];
+    return res.send(res.random(coin));      
   }
 
+  legitCounter(res, check) {
+    var request = JSON.parse(this.req.chunks[0]);
+    console.log(request);
+    if(check) {
+      console.log('Checking Counter Amount');
+      return res.send(`Shit man, legit count at ${process.env.HUBOT_LEGIT_COUNTER}`);
+    }
+    
+    if(request.user_id == '86736722') {
+      process.env.HUBOT_LEGIT_COUNTER++;
+      return console.log('LEGIT COUNT + 1 | Current count = ' + process.env.HUBOT_LEGIT_COUNTER);
+    }
+
+
+  }
 
   listCommands(res) {
     console.log(res);
@@ -292,6 +304,14 @@ class AllBot {
 
     this.robot.hear(/commands/i, res=>
       this.listCommands(res)
+    );
+
+    this.robot.hear(/legit/i, res=>
+      this.legitCounter(res)
+    );
+
+    this.robot.hear(/^counter$/i, res=>
+      this.legitCounter(res, true)
     );
 
 
