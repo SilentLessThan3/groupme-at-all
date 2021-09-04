@@ -1,5 +1,14 @@
 const { POINT_CONVERSION_COMPRESSED } = require("constants");
 const https = require("https");
+const mysql = require('mysql2');
+
+var con = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "password",
+  database: "outsiderzschema",
+});
+
 
 // Bot configs read in from environment
 const room_id = process.env.HUBOT_GROUPME_ROOM_ID;
@@ -125,11 +134,38 @@ class AllBot {
   legitCounter(res, check) {
     if(check) {
       console.log('Checking Counter Amount');
-      return res.send(`Shit man, legit count at ${process.env.HUBOT_LEGIT_COUNTER}`);
+      return res.send('Shit man, legit count at ' + runCheckSql());
     }
-      process.env.HUBOT_LEGIT_COUNTER++;
-      return console.log('LEGIT COUNT + 1 | Current count = ' + process.env.HUBOT_LEGIT_COUNTER);
-  
+
+    addLegitSql();
+    return console.log('Added to legit counter');
+
+    function runCheckSql() {
+
+    con.connect(function( err) {
+      if(err) throw err;
+      console.log("Connected");
+      var sql = 
+        'SELECT SUM(count) as count from outsiderzschema.legitcounter;'
+      con.query(sql, function( err, result) {
+        if(err) throw err;
+        return console.log(result[0].count);
+      });
+    });
+  }
+
+    function addLegitSql() {
+    con.connect(function (err) {
+      if (err) throw err;
+      console.log("Connected");
+      var sql =
+        'INSERT INTO legitCounter (count, user_id) VALUES (1, "N/A")';
+      con.query(sql, function (err, result) {
+        if (err) throw err;
+        return console.log("Inserted record");
+      });
+    });
+  }
 
 
   }
