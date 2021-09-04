@@ -3,7 +3,7 @@ const https = require("https");
 const mysql = require('mysql2');
 
 var con = mysql.createConnection({
-  host: "localhost",
+  host: "73.139.236.40",
   user: "root",
   password: "password",
   database: "outsiderzschema",
